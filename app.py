@@ -144,7 +144,7 @@ def charts():
 
     for doc in documents:
         countries.append(doc.get("Country", ""))
-        totals.append(int(doc.get("Total", 0)))  # Assurez-vous que le total est un entier
+        totals.append(int(doc.get("Total", 0)))  # On s'assure que le total est un entier
 
         for year in range(1980, 2014):
             # Convertir les valeurs en entier
@@ -342,8 +342,6 @@ def classify():
             return redirect(url_for('classify'))
 
     return render_template('classify.html', country=None, classe=None, total=None)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Recherche</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label for="Country">Country</label>
+        <input type="text" id="Country" name="Country" class="form-control" value="{{ Country | default('') }}">
+    </div>
+    <div class="mb-3">
+        <label for="Continent">Continent</label>
+        <input type="text" id="Continent" name="Continent" class="form-control" value="{{ Continent | default('') }}">
+    </div>
+    <div class="mb-3">
+        <label for="Region">Region</label>
+        <input type="text" id="Region" name="Region" class="form-control" value="{{ Region | default('') }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Allez</button>
+</form>
+
+{% if result %}
+<h3>Document trouvé</h3>
+<ul>
+    {% for key, value in result.items() %}
+        <li><strong>{{ key }}:</strong> {{ value }}</li>
+    {% endfor %}
+{% else %}
+<p>Aucun résultat trouvé.</p>
+{% endif %}
+{% endblock %}

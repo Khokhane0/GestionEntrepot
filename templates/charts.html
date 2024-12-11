@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Graphiques</h2>
+
+<div>
+    <h3>Graphique en barres : Total par pays</h3>
+    <img src="data:image/png;base64,{{ bar_chart }}" alt="Bar Chart">
+</div>
+
+<div>
+    <h3>Graphique en lignes : Évolution (1980-2013)</h3>
+    <img src="data:image/png;base64,{{ line_chart }}" alt="Line Chart">
+</div>
+
+<div>
+    <h3>Histogramme : Distribution des Totals</h3>
+    <img src="data:image/png;base64,{{ histogram }}" alt="Histogram">
+</div>
+{% endblock %}
+

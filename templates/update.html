@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Mise à jour et Suppression</h2>
+
+<!-- Formulaire de recherche -->
+<form method="POST" action="/update">
+    <div class="mb-3">
+        <label for="country">Rechercher un pays</label>
+        <input type="text" id="country" name="country" class="form-control" placeholder="Entrez le nom du pays" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Rechercher</button>
+</form>
+
+{% if record %}
+<!-- Formulaire pour mise à jour -->
+<h3 class="mt-4">Mise à jour des informations pour {{ record['Country'] }}</h3>
+<form method="POST" action="/update_action">
+    <input type="hidden" name="country" value="{{ record['Country'] }}">
+
+    {% for key, value in record.items() %}
+        {% if key not in ['_id', 'Country'] %}
+        <div class="mb-3">
+            <label for="{{ key }}">{{ key }}</label>
+            <input type="text" id="{{ key }}" name="{{ key }}" class="form-control" value="{{ value }}">
+        </div>
+        {% endif %}
+    {% endfor %}
+    <button type="submit" class="btn btn-success">Mettre à jour</button>
+</form>
+
+<!-- Formulaire pour suppression -->
+<h3 class="mt-4">Supprimer un champ ou le document complet</h3>
+<form method="POST" action="/delete" class="mt-3">
+    <input type="hidden" name="country" value="{{ record['Country'] }}">
+    <div class="mb-3">
+        <label for="field_to_delete">Nom du champ à supprimer (optionnel)</label>
+        <input type="text" id="field_to_delete" name="field_to_delete" class="form-control" placeholder="Exemple : Region">
+    </div>
+    <button type="submit" class="btn btn-danger">Supprimer le champ ou le document</button>
+</form>
+{% endif %}
+
+{% if not record and request.method == "POST" %}
+<p class="text-danger mt-3">Aucun résultat trouvé pour ce pays. Essayez un autre nom.</p>
+{% endif %}
+{% endblock %}
+
+

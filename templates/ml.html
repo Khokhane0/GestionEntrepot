@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-center">Modèles d'Apprentissage Automatique</h2>
+
+<div class="mb-5">
+    <h3>Régression Linéaire</h3>
+    <img src="data:image/png;base64,{{ lr_chart }}" alt="Graphique Régression Linéaire" class="img-fluid">
+</div>
+
+<div class="mb-5">
+    <h3>KNN (Classification)</h3>
+    <img src="data:image/png;base64,{{ knn_chart }}" alt="Graphique KNN" class="img-fluid">
+</div>
+
+<div>
+    <h3>Random Forest</h3>
+    <img src="data:image/png;base64,{{ rf_chart }}" alt="Graphique Random Forest" class="img-fluid">
+</div>
+{% endblock %}

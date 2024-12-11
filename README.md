@@ -28,7 +28,9 @@ Avant de commencer, assurez-vous que vous avez Python et pip installés sur votr
 
         2. Étapes d'installation
 Clonez ce projet depuis GitHub :
+
 git clone https://github.com/Khokhane0/GestionEntrepot.git
+
 Installez les dépendances : Assurez-vous d'avoir un environnement virtuel configuré, puis installez les dépendances via pip : pip install -r requirements.txt
 Le fichier requirements.txt contient toutes les dépendances nécessaires :
 Flask==2.2.2

@@ -1,0 +1,12 @@
+# Environnement Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Configurations système
+.DS_Store
+Thumbs.db
+
+# Bibliothèques
+venv/

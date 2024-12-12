@@ -183,44 +183,29 @@ def charts():
 
 @app.route('/ml')
 def ml_page():
-    """Route pour afficher tous les graphiques d'apprentissage automatique avec nettoyage des données et modèle entraîné."""
-
-    # Chargement des données depuis MongoDB
+    # Chargement et nettoyage des données depuis MongoDB
     documents = list(collection.find({}, {"Total": 1, **{str(year): 1 for year in range(1980, 2014)}}))
     data = []
 
-    # Prétraitement et nettoyage des données
     for doc in documents:
         entry = {}
         for year in range(1980, 2014):
-            try:
-                # Convertir les années en float pour éviter des erreurs de comparaison
-                entry[str(year)] = float(doc.get(str(year), 0))
-            except ValueError:
-                entry[str(year)] = 0  # Remplacer les valeurs non convertibles par 0
-        entry["Total"] = float(doc.get("Total", 0))  # Assurez-vous que Total est un nombre flottant
+            entry[str(year)] = float(doc.get(str(year), 0))
+        entry["Total"] = float(doc.get("Total", 0))
         data.append(entry)
 
-    # Convertir en DataFrame
     df = pd.DataFrame(data)
-
-    # Nettoyage des données : remplacer NaN par 0 et s'assurer que tout est en type float
-    df.fillna(0, inplace=True)
-
-    # Supprimer les lignes contenant uniquement des zéros
-    df = df[(df.T != 0).any()]
-
-    # Convertir en float toutes les colonnes pertinentes pour l'apprentissage automatique
+    df.fillna(0, inplace=True)  # Nettoyage
+    df = df[(df.T != 0).any()]  # Supprimer les lignes nulles
     years = list(map(str, range(1980, 2014)))
-    X = df[years].astype(float)
-    y = df["Total"].astype(float)
+    X = df[years]
+    y = df["Total"]
 
-    # Génération des graphiques après avoir entraîné les modèles
+    # Générer les graphiques
     lr_chart = generate_linear_regression_chart(X, y)
     knn_chart = generate_knn_chart(X, y)
     rf_chart = generate_random_forest_chart(X, y)
 
-    # Rendre la page avec tous les graphiques
     return render_template(
         'ml.html',
         lr_chart=lr_chart,
@@ -229,36 +214,34 @@ def ml_page():
     )
 
 def generate_linear_regression_chart(X, y):
-    """Génère un graphique pour la régression linéaire avec distinction entre valeurs réelles et prédites."""
+    """Génère un graphique pour la régression linéaire avec MSE."""
     # Diviser les données en ensembles d'entraînement et de test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
+
     # Créer et entraîner le modèle de régression linéaire
     model_lr = LinearRegression()
     model_lr.fit(X_train, y_train)
-    
+
     # Prédictions sur l'ensemble de test
     predictions_lr = model_lr.predict(X_test)
 
-    # Tracer les valeurs réelles (en bleu) et les prédictions (en rouge)
-    plt.figure(figsize=(10, 6))
-    
-    # Valeurs réelles (Test) en bleu
-    plt.scatter(range(len(y_test)), y_test, color='blue', label='Réel (Test)', alpha=0.6)
+    # Calcul du MSE
+    mse_lr = mean_squared_error(y_test, predictions_lr)
 
-    # Valeurs prédites (Régression linéaire) en rouge
+    # Tracer les valeurs réelles et prédites
+    plt.figure(figsize=(10, 6))
+    plt.scatter(range(len(y_test)), y_test, color='blue', label='Réel (Test)', alpha=0.6)
     plt.scatter(range(len(predictions_lr)), predictions_lr, color='red', label='Régression linéaire (Prédictions)', alpha=0.6)
-    
-    # Ajouter la légende et les labels
-    plt.legend()
-    plt.title("Régression Linéaire : Valeurs Réelles vs Prédictions")
+    plt.plot([0, len(y_test)], [y_test.mean(), y_test.mean()], 'k-',lw=4, label='Moyenne des réels')  # Ligne moyenne
+
+    # Ajouter le titre avec le MSE
+    plt.title(f"Régression Linéaire : Valeurs Réelles vs Prédictions\nMSE: {mse_lr:.2f}")
     plt.xlabel("Index des pays")
     plt.ylabel("Total d'immigrants")
+    plt.legend()
 
-    # Encoder l'image pour l'affichage dans la page web
-    lr_chart = encode_image()
-
-    return lr_chart
+    # Encoder le graphique en base64
+    return encode_image()
 
 
 def generate_knn_chart(X, y):
@@ -279,20 +262,33 @@ def generate_knn_chart(X, y):
     return encode_image()
 
 def generate_random_forest_chart(X, y):
-    """Génère un graphique pour Random Forest."""
-    model_rf = RandomForestRegressor(n_estimators=100, random_state=42)
-    model_rf.fit(X, y)  # Entraîner le modèle Random Forest
-    predictions = model_rf.predict(X)
+    """Génère un graphique pour Random Forest avec MSE."""
+    # Diviser les données en ensembles d'entraînement et de test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Tracer les données réelles et prédites
+    # Créer et entraîner le modèle Random Forest
+    model_rf = RandomForestRegressor(n_estimators=100, random_state=42)
+    model_rf.fit(X_train, y_train)
+
+    # Prédictions sur l'ensemble de test
+    predictions_rf = model_rf.predict(X_test)
+
+    # Calcul du MSE
+    mse_rf = mean_squared_error(y_test, predictions_rf)
+
+    # Tracer les valeurs réelles et prédites
     plt.figure(figsize=(10, 6))
-    plt.scatter(range(len(y)), y, color="blue", label="Valeurs réelles")  # Valeurs réelles en bleu
-    plt.scatter(range(len(predictions)), predictions, color="red", alpha=0.5, label="Valeurs prédites")  # Valeurs prédites en rouge
-    plt.title("Random Forest : Valeurs Réelles vs Prédictions")
+    plt.scatter(range(len(y_test)), y_test, color='blue', label='Réel (Test)', alpha=0.6)
+    plt.scatter(range(len(predictions_rf)), predictions_rf, color='red', label='Random Forest (Prédictions)', alpha=0.6)
+    plt.plot([0, len(y_test)], [y_test.mean(), y_test.mean()], 'k-',lw=4 , label='Moyenne des réels')  # Ligne moyenne
+
+    # Ajouter le titre avec le MSE
+    plt.title(f"Random Forest : Valeurs Réelles vs Prédictions\nMSE: {mse_rf:.2f}")
     plt.xlabel("Index des pays")
     plt.ylabel("Total d'immigrants")
     plt.legend()
 
+    # Encoder le graphique en base64
     return encode_image()
 
 

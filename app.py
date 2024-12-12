@@ -4,7 +4,6 @@ from pymongo.server_api import ServerApi
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
@@ -249,8 +248,7 @@ def generate_linear_regression_chart(X, y):
 
     # Valeurs prédites (Régression linéaire) en rouge
     plt.scatter(range(len(predictions_lr)), predictions_lr, color='red', label='Régression linéaire (Prédictions)', alpha=0.6)
-
-
+    
     # Ajouter la légende et les labels
     plt.legend()
     plt.title("Régression Linéaire : Valeurs Réelles vs Prédictions")
